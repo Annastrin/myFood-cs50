@@ -1,0 +1,227 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    myFood
+{% endblock %}
+
+{% block main %}
+<div>
+    <div>
+        <div class="add-product-btn">
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#putInFridge">Add a product</button>
+        </div>
+        <h2>List of products</h2>
+        <div class="table-responsive">
+            <table cellspacing="1" class="table tablesorter" id="listOfProducts">
+                <thead>
+                    <tr class="table-head">
+                        <th>Product name</th>
+                        <th>Quantity</th>
+                        <th>Unit of measure</th>
+                        <th>Expiration date</th>
+                        <th colspan="2"><center>Actions</center></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        {% if product["quantity"] > 0 %}
+                            <tr class="exp-prods">
+                                <td>{{ product["name"] }}</td>
+                                <td><center>{{ product["quantity"] }}</center></td>
+                                <td><center>{{ product["units"] }}</center></td>
+                                <td class="exp-dates"><center>{{ product["expiration_date"] }}</center></td>
+                                <td>
+                                    <button type="button" data-product="{{ product["id"] }}" data-quantity="{{ product["quantity"] }}" class="btn btn-info btn-sm edit-product" data-toggle="modal" data-target="#reduceProduct">Reduce</button>
+                                </td>
+                                <td>
+                                    <button type="button" data-product="{{ product["id"] }}" class="btn btn-danger btn-sm remove-product" data-toggle="modal" data-target="#removeProduct">Remove</button>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // jquery tablesorter plugin
+    $(document).ready(function() {
+        $("#listOfProducts").tablesorter({
+
+            headers: {
+                2: {
+                    sorter: false
+                },
+
+                4: {
+                    sorter: false
+                },
+
+                5: {
+                    sorter: false
+                }
+            }
+        });
+    });
+
+    // borrowed from there: https://github.com/twbs/bootstrap/pull/6256
+    $(document).on('show.bs.modal', function (e) {
+        var dialog = $(e.target);
+        var button = $(e.relatedTarget);
+        $("[name='product']", dialog).val(button.data('product'));
+        $("[name='quantity']", dialog).attr("max", button.data('quantity'));
+    });
+
+    var expProds = document.getElementsByClassName("exp-prods");
+    var expDates = document.getElementsByClassName("exp-dates");
+    var today = new Date();
+    for (var i = 0; i < expDates.length; i++){
+        var expDateStr = expDates[i].innerText;
+        var expDate = new Date(expDateStr);
+        var diff = (expDate - today)/86400000;
+        if (diff <= 1) {
+            var expTD = expProds[i].children;
+            expTD[0].style.backgroundColor='#d0322e';
+            expTD[1].style.backgroundColor='#d0322e';
+            expTD[2].style.backgroundColor='#d0322e';
+            expTD[3].style.backgroundColor='#d0322e';
+        }
+    }
+</script>
+
+
+<div id="putInFridge" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <center><h4>Add a product in the list</h4></center>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('add') }}" method="post">
+                    <fieldset>
+                        <div class="form-group row">
+                            <div class="col-sm-2 my-cols"></div>
+                            <div class="col-sm-8 my-cols">
+                                <label class="label-add-product" for="product_name">Product name:</label>
+                                <input autofocus id="product_name" class="form-control" name="product_name" list="products_name" placeholder="Bread" type="text" required/>
+                                <datalist id=products_name>
+                                    <option value="Bread"></option>
+                                    <option value="Pasta"></option>
+                                    <option value="Confection"></option>
+                                    <option value="Groats"></option>
+                                    <option value="Meat"></option>
+                                    <option value="Fish"></option>
+                                    <option value="Milk"></option>
+                                    <option value="Dairy product"></option>
+                                    <option value="Fruit"></option>
+                                    <option value="Vegetables"></option>
+                                </datalist>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-6 my-cols">
+                                <label for="quantity" class="label-add-product">Quantity:</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-2 my-cols"></div>
+                            <div class="col-sm-4 my-cols">
+                                <input class="form-control" id="quantity" name="quantity" placeholder="1" type="number" min="1" required/>
+                            </div>
+                            <div class="col-sm-4 my-cols">
+                                <select class="form-control" id="units" name="units">
+                                    <option class="units-color">units</option>
+                                    <option class="units-color">kg</option>
+                                    <option class="units-color">l</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-2 my-cols"></div>
+                            <div class="col-sm-8 my-cols">
+                                <label for="shelf_life" class="label-add-product">Shelf life (in days):</label>
+                                <input class="form-control" name="shelf-life" id="shelf_life" placeholder="7" type="number" min="1" required/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-2 my-cols"></div>
+                            <div class="col-sm-8 my-cols">
+                                <label for="date-of-manufacture" class="label-add-product">Manufactured date (Default is today):</label>
+                                <input class="form-control" id="date-of-manufacture" name="date-of-manufacture" type="date"/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-4 my-cols"></div>
+                            <div class="col-sm-4 my-cols">
+                                <button class="btn btn-success" type="submit" style="width: 100%">Add</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="reduceProduct" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <center><h4>Reduce the product</h4></center>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('reduce') }}" method="post">
+                    <fieldset>
+                        <input type="hidden" name="product"/>
+                        <div class="form-group row">
+                            <div class="col-sm-3 my-cols"></div>
+                            <div class="col-sm-6 my-cols">
+                                <label for="reduce-quantity" class="label-add-product">Quantity:</label>
+                                <input class="form-control" id="reduce-quantity" name="quantity" placeholder="Enter a number" type="number" min="0" step="0.1" required/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-4 my-cols"></div>
+                            <div class="col-sm-4 my-cols">
+                                <button class="btn btn-info" type="submit" style="width: 100%">Reduce</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="removeProduct" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <center><h4>Are you sure to remove the product?</h4></center>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('remove') }}" method="post">
+                    <fieldset>
+                        <input type="hidden" name="product"/>
+                        <div class="form-group row">
+                            <div class="col-sm-4 my-cols"></div>
+                            <div class="col-sm-4 my-cols">
+                                <button class="btn btn-danger" type="submit" style="width: 100%">Remove</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

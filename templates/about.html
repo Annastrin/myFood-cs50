@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    myFood
+{% endblock %}
+
+{% block main %}
+
+<div class="container about">
+    <h3>What is it?</h3>
+    <p><b>myProducts</b> is an app for control your food in your fridge.</p>
+    <hr>
+    <h3>How to use it?</h3>
+    <ol>
+        <li>Register</li>
+        <li>Add a product in the list</li>
+        <li>Reduce the quantity of the product if you want</li>
+        <li>Remove the product if you want</li>
+    </ol>
+    <hr>
+    <h3>Additional Information:</h3>
+    <ul>
+        <li>Products in the list are sorted by expiration date</li>
+        <li>You can also sort the products by name or by quantity</li>
+        <li>When the expiration date is coming to an end, the product's row is highlighted in red</li>
+        <li>When you reduce the quantity of a product to zero, the product is deleted from the list</li>
+    </ul>
+</div>
+
+{% endblock %}

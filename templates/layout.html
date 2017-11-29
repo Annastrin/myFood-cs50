@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8"/>
+        <meta content="initial-scale=1, width=device-width" name="viewport"/>
+
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet"/>
+
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.5/validator.min.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.29.0/js/jquery.tablesorter.js"></script>
+
+        <title>myFood</title>
+
+    </head>
+
+    <body>
+
+        <div class="container">
+
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="{{ url_for('index') }}">myFood</a>
+                    </div>
+                    <div class="navbar-collapse" id="navbar">
+                        {% if session.user_id %}
+                            <ul class="nav navbar-nav">
+                                <li><a href="{{ url_for('about') }}">About</a></li>
+                            </ul>
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+                            </ul>
+                        {% else %}
+                            <ul class="nav navbar-nav">
+                                <li><a href="{{ url_for('about') }}">About</a></li>
+                            </ul>
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="{{ url_for('register') }}">Register</a></li>
+                                <li><a href="{{ url_for('login') }}">Log In</a></li>
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </nav>
+            <main>
+                {% block main %}{% endblock %}
+            </main>
+        </div>
+
+    </body>
+
+</html>

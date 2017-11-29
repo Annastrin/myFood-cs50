@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Log in
+{% endblock %}
+
+{% block main %}
+    <div class="container">
+            <div>
+                <h3 class="error">{{ error }}</h3>
+            </div>
+            <form action="{{ url_for('login') }}" data-toggle="validator" id="login" role="form" method="post">
+                <div class="form-group row">
+                    <div class="col-lg-offset-5 col-md-offset-5 col-sm-offset-5">
+                        <label for="username" class="label-add-product">Username:</label>
+                        <input type="text" class="form-control" id="username" placeholder="Enter username" name="username" required>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-lg-offset-5 col-md-offset-5 col-sm-offset-5">
+                        <label for="inputPassword" class="label-add-product">Password:</label>
+                        <input type="password" data-minlength="8" class="form-control" id="inputPassword" name="password" placeholder="Enter password" required>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-lg-offset-5 col-md-offset-5 col-sm-offset-5">
+                        <button class="btn btn-default" type="submit">Log in</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
+{% endblock %}
